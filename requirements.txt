@@ -1,0 +1,15 @@
+pandas
+numpy
+xarray
+netCDF4
+scikit-learn
+xgboost
+streamlit
+folium
+apscheduler
+plotly
+jupyter
+python-dotenv
+h5py
+h5netcdf
+scipy

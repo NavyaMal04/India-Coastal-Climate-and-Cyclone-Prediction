@@ -1,0 +1,53 @@
+# --- Datasets ---
+# We ignore the raw satellite data since it is generated and too large for git.
+data/raw/
+
+# You can choose to ignore processed data if it gets too large:
+# data/processed/
+data/processed/preprocessing_log.txt
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Virtual Environments ---
+venv/
+.venv/
+env/
+.env/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints/
+
+# --- Environment Variables ---
+.env
+
+# --- OS / Editor ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Scratch files ---
+scratch_*.py
+inspection_report.txt
