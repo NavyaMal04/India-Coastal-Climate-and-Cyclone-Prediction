@@ -13,3 +13,5 @@ python-dotenv
 h5py
 h5netcdf
 scipy
+streamlit-folium
+streamlit-autorefresh
