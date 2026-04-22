@@ -1,6 +1,6 @@
-# --- Datasets ---
 # We ignore the raw satellite data since it is generated and too large for git.
 data/raw/
+!data/raw/historical_weather_2015_2024.csv
 
 # You can choose to ignore processed data if it gets too large:
 # data/processed/

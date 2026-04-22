@@ -1,0 +1,21 @@
+{
+  "sst": {
+    "min": 26.10887336730957,
+    "max": 30.02947235107422
+  },
+  "wind_speed": {
+    "min": 0.2178250253200531,
+    "max": 6.339674949645996
+  },
+  "pressure": {
+    "min": 1010.4497680664062,
+    "max": 1014.403076171875
+  },
+  "rainfall": {
+    "min": 0.006805556,
+    "max": 0.8447917
+  },
+  "risk_score_max": 10,
+  "created_at": "2026-04-21T21:28:09.979036",
+  "note": "Use identical min/max on live API data during inference"
+}
