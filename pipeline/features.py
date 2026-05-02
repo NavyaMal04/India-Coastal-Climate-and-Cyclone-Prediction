@@ -117,27 +117,27 @@ def run_features():
     
     # 3e. Geographic features
     df['distance_from_equator'] = df['latitude'].abs()
-    df['bay_of_bengel_flag'] = ((df['longitude'] > 80) & (df['latitude'] > 8)).astype(int)
+    df['bay_of_bengal_flag'] = ((df['longitude'] > 80) & (df['latitude'] > 8)).astype(int)
     df['arabian_sea_flag'] = (df['longitude'] < 77).astype(int)
     
-    # 3f. Normalized features for ML input
+    # Save normalization params and regional means
     min_max_params = {}
     for col in ['sst', 'wind_speed', 'pressure', 'rainfall']:
         vmin = df[col].min()
         vmax = df[col].max()
-        
-        # Handle case where vmin == vmax
         denom = vmax - vmin if vmax > vmin else 1.0
         
-        # Explicit col names requested: sst_norm, wind_norm, pressure_norm, rainfall_norm
         col_name = f"{col.replace('_speed', '')}_norm"
         df[col_name] = (df[col] - vmin) / denom
-        
         min_max_params[col] = {"min": float(vmin), "max": float(vmax)}
-        
+    
+    # Save regional pressure means for production anomaly calculation
+    reg_means = df.groupby('region')['pressure'].mean().to_dict()
+    min_max_params["regional_pressure_means"] = reg_means
+    
     min_max_params["risk_score_max"] = 10
     min_max_params["created_at"] = datetime.now().isoformat()
-    min_max_params["note"] = "Use identical min/max on live API data during inference"
+    min_max_params["note"] = "Use identical stats on live data during inference"
     
     with open(PARAMS_FILE, 'w') as f:
         json.dump(min_max_params, f, indent=2)
@@ -154,7 +154,7 @@ def run_features():
         'risk_score', 'risk_level',
         'cyclone_probability',
         'distance_from_equator',
-        'bay_of_bengel_flag', 'arabian_sea_flag',
+        'bay_of_bengal_flag', 'arabian_sea_flag',
         'sst_norm', 'wind_norm', 'pressure_norm', 'rainfall_norm'
     ]
     df = df[final_cols]
@@ -188,7 +188,7 @@ def run_features():
     print(f"   % above 28.5: {(df['sst_danger_zone'].sum()/len(df))*100:.1f}%")
     
     print("\n7. Water Body Context:")
-    print(f"   Bay of Bengal rows: {df['bay_of_bengel_flag'].sum()}")
+    print(f"   Bay of Bengal rows: {df['bay_of_bengal_flag'].sum()}")
     print(f"   Arabian Sea rows: {df['arabian_sea_flag'].sum()}")
     
     print("\n8. Top 5 highest risk_score rows:")

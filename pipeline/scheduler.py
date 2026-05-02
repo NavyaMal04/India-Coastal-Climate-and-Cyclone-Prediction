@@ -75,16 +75,24 @@ def run_pipeline():
         log_inference_run(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), 0, 0, error_msg, time.time() - start_time)
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description='Run Coastal Climate Prediction Pipeline')
+    parser.add_argument('--once', action='store_true', help='Run the pipeline once and exit')
+    args = parser.parse_args()
+
     init_db()
     
-    # Run immediately on startup (for Task 6 test cycle)
-    run_pipeline()
-    
-    # Scheduler setup
-    scheduler = BlockingScheduler()
-    scheduler.add_job(run_pipeline, 'interval', hours=6)
-    print("\nScheduler started. Waiting for next 6-hour interval...")
-    try:
-        scheduler.start()
-    except (KeyboardInterrupt, SystemExit):
-        print("Scheduler stopped.")
+    if args.once:
+        run_pipeline()
+    else:
+        # Run immediately on startup
+        run_pipeline()
+        
+        # Scheduler setup
+        scheduler = BlockingScheduler()
+        scheduler.add_job(run_pipeline, 'interval', hours=6)
+        print("\nScheduler started. Waiting for next 6-hour interval...")
+        try:
+            scheduler.start()
+        except (KeyboardInterrupt, SystemExit):
+            print("Scheduler stopped.")
