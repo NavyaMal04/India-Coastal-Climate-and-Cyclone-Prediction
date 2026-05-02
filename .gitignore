@@ -77,3 +77,6 @@ models/evaluation/*.png
 # OS
 .DS_Store
 Thumbs.db
+
+debug_*.py
+check_*.py
