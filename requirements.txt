@@ -4,6 +4,10 @@ xarray
 netCDF4
 scikit-learn
 xgboost
+imbalanced-learn
+matplotlib
+seaborn
+requests
 streamlit
 folium
 apscheduler
@@ -12,4 +16,6 @@ jupyter
 python-dotenv
 h5py
 h5netcdf
+streamlit-folium
+sqlalchemy
 scipy

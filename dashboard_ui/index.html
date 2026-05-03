@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COASTGUARD | Enterprise Risk Intelligence</title>
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Map Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #060d1f; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .loader-spinner {
+            width: 44px; height: 44px; border: 3px solid rgba(37,99,235,0.18);
+            border-top: 3px solid #3b82f6; border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            box-shadow: 0 0 20px rgba(59,130,246,0.3);
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loader-text {
+            margin-top: 18px; font-family: 'JetBrains Mono', monospace;
+            color: #60a5fa; font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="animate-fade">
+
+    <!-- System Preloader -->
+    <div id="preloader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">COASTGUARD OS</div>
+    </div>
+
+    <!-- Global Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="https://img.icons8.com/fluency/48/tsunami.png" alt="CoastGuard Logo">
+                <div class="brand-text">
+                    <span class="brand-name">COASTGUARD</span>
+                    <span class="brand-tag">Risk Intelligence v4.1</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active" data-tab="risk">Risk Overview</li>
+                <li data-tab="analytics">Deep Analytics</li>
+                <li data-tab="broadcast">Broadcast Center</li>
+            </ul>
+
+            <div class="nav-actions">
+                <div class="status-indicator">
+                    <div class="pulse-dot"></div>
+                    <span>SYSTEM SYNC ACTIVE</span>
+                </div>
+                <div class="v-divider"></div>
+                <div class="global-selector">
+                    <select id="stateSelect">
+                        <option value="All">National Overview</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Odisha Coast">Odisha Coast</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="West Bengal">West Bengal</option>
+                    </select>
+                </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-shell">
+
+        <!-- Tab: Risk Overview -->
+        <section id="risk" class="tab-content active">
+            <div class="page-header animate-reveal">
+                <h1>Operational Command Center</h1>
+                <p>AI-driven cyclonic surveillance &amp; real-time coastal risk matrix</p>
+            </div>
+
+            <!-- KPI Layer -->
+            <div class="kpi-grid">
+                <div class="kpi-card animate-reveal" style="animation-delay: 0.1s;">
+                    <div class="kpi-info">
+                        <span class="kpi-label">National Prob. Index</span>
+                        <span class="kpi-value counter" data-target="0">0%</span>
+                        <p class="kpi-meta positive">↑ 2.4% vs prev. session</p>
+                    </div>
+                </div>
+                <div class="kpi-card animate-reveal" style="animation-delay: 0.2s;">
+                    <div class="kpi-info">
+                        <span class="kpi-label">Active Threat Vectors</span>
+                        <span class="kpi-value counter" data-target="0">00</span>
+                        <p class="kpi-meta warning">Moderate alerts active</p>
+                    </div>
+                </div>
+                <div class="kpi-card featured animate-reveal" style="animation-delay: 0.3s;">
+                    <div class="kpi-info">
+                        <span class="kpi-label">Peak Sector Risk</span>
+                        <span class="kpi-value counter" data-target="0">0%</span>
+                        <p id="topRiskRegion" class="kpi-meta">Locating Sector...</p>
+                    </div>
+                </div>
+                <div class="kpi-card animate-reveal" style="animation-delay: 0.4s;">
+                    <div class="kpi-info">
+                        <span class="kpi-label">Automated Broadcasts</span>
+                        <span class="kpi-value counter" data-target="0">00</span>
+                        <p class="kpi-meta alert">Active surveillance</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Intelligence Layer -->
+            <div id="riskBanner" class="global-advisory-banner animate-fade">
+                <span class="banner-tag">ADVISORY</span>
+                <span id="bannerText">Connecting to secure intelligence feeds...</span>
+            </div>
+
+            <div class="intelligence-grid">
+                <!-- Map Terminal -->
+                <div class="panel map-panel animate-reveal" style="animation-delay: 0.5s;">
+                    <div class="panel-header">
+                        <h3>Geospatial Risk Distribution</h3>
+                        <div class="map-controls-inline">
+                            <button id="mapSurvey" class="m-btn active">SURVEY</button>
+                            <button id="mapSat" class="m-btn">SAT</button>
+                        </div>
+                    </div>
+                    <div id="map" class="map-container"></div>
+                </div>
+
+                <!-- Telemetry Terminal -->
+                <div class="panel telemetry-panel animate-reveal" style="animation-delay: 0.6s;">
+                    <div class="panel-header">
+                        <h3>Sector Telemetry</h3>
+                        <span id="telemetryRegionName" class="sector-badge">NATIONAL</span>
+                    </div>
+                    <div id="indicatorList" class="telemetry-grid">
+                        <div class="telemetry-placeholder">Establishing satellite handshake...</div>
+                    </div>
+                    <div class="telemetry-footer">
+                        <div class="source-cluster">
+                            <span class="src-tag">NASA POWER</span>
+                            <span class="src-tag">OPEN-METEO</span>
+                            <span class="src-tag">NOAA SST</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab: Deep Analytics -->
+        <section id="analytics" class="tab-content animate-reveal">
+            <div class="page-header">
+                <h1>Predictive Data Intelligence</h1>
+                <p>30-day historical correlation analysis for <span id="analyticsRegionName" class="hl">Global</span> metrics</p>
+            </div>
+
+            <div class="insight-row">
+                <div class="stat-box">
+                    <span class="sb-label">Historical Peak</span>
+                    <span id="histPeakRisk" class="sb-value">--</span>
+                </div>
+                <div class="stat-box">
+                    <span class="sb-label">Atm. Pressure</span>
+                    <span id="pressureValue" class="sb-value">--</span>
+                </div>
+                <div class="stat-box">
+                    <span class="sb-label">Max Gust Intensity</span>
+                    <span id="windIntensity" class="sb-value">--</span>
+                </div>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="panel chart-card">
+                    <h3>Risk Probability Trend (30d)</h3>
+                    <div class="canvas-holder"><canvas id="probabilityChart"></canvas></div>
+                </div>
+                <div class="panel chart-card">
+                    <h3>Meteorological Correlation Matrix</h3>
+                    <div class="canvas-holder"><canvas id="correlationChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="panel summary-panel animate-fade">
+                <div class="summary-icon">🧠</div>
+                <div class="summary-content">
+                    <h4>Engine Intelligence Insight</h4>
+                    <p id="intelligenceSummary">Please select a monitoring sector to generate automated insights.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab: Broadcast Center -->
+        <section id="broadcast" class="tab-content animate-reveal">
+            <div class="header-split">
+                <div class="page-header">
+                    <h1>Operational Advisories</h1>
+                    <p>Emergency broadcasts for <span id="broadcastRegionName" class="hl">All Sectors</span></p>
+                </div>
+                <div class="filter-pills">
+                    <button class="pill active" data-severity="all">All Logs</button>
+                    <button class="pill" data-severity="high">Critical</button>
+                    <button class="pill" data-severity="moderate">Advisories</button>
+                </div>
+            </div>
+            <div id="alertContainer" class="broadcast-grid"></div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-inner">
+            <span>© 2024 COASTGUARD · Enterprise Coastal Defense Platform</span>
+            <div class="footer-links">
+                <span>v4.1.0-STABLE</span>
+                <span>System Policy</span>
+                <span>Operations Support</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Core Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="script.js"></script>
+</body>
+</html>

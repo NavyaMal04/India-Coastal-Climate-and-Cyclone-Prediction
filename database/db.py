@@ -196,3 +196,71 @@ def resolve_old_alerts():
     ''', (resolved_time, time_limit))
     conn.commit()
     conn.close()
+def get_latest_readings():
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute('''
+        SELECT r.* FROM live_readings r
+        INNER JOIN (
+            SELECT region, MAX(timestamp) as max_ts 
+            FROM live_readings GROUP BY region
+        ) grouped_r 
+        ON r.region = grouped_r.region AND r.timestamp = grouped_r.max_ts
+    ''')
+    rows = c.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def get_latest_inference_log():
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute('SELECT * FROM inference_log ORDER BY run_timestamp DESC LIMIT 1')
+    row = c.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def get_resolved_alerts(days=7):
+    conn = get_connection()
+    c = conn.cursor()
+    time_limit = (datetime.utcnow() - timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S")
+    c.execute('SELECT * FROM alerts WHERE is_active = 0 AND resolved_at >= ? ORDER BY resolved_at DESC', (time_limit,))
+    rows = c.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def get_region_history_enriched(region, days=30):
+    conn = get_connection()
+    c = conn.cursor()
+    time_limit = (datetime.utcnow() - timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S")
+    
+    if region == "All":
+        c.execute('''
+            SELECT 
+                p.timestamp,
+                'National' as region,
+                AVG(p.risk_score) as risk_score,
+                'N/A' as risk_level,
+                AVG(p.ml_probability) as ml_probability,
+                AVG(p.final_probability) as final_probability,
+                AVG(r.rainfall) as raw_rain,
+                AVG(r.wind_speed) as raw_wind,
+                AVG(r.pressure) as raw_pressure,
+                AVG(r.sst) as raw_sst
+            FROM predictions p
+            LEFT JOIN live_readings r ON p.region = r.region AND p.timestamp = r.timestamp
+            WHERE p.timestamp >= ? 
+            GROUP BY p.timestamp
+            ORDER BY p.timestamp ASC
+        ''', (time_limit,))
+    else:
+        c.execute('''
+            SELECT p.*, r.rainfall as raw_rain, r.wind_speed as raw_wind, r.pressure as raw_pressure, r.sst as raw_sst
+            FROM predictions p
+            LEFT JOIN live_readings r ON p.region = r.region AND p.timestamp = r.timestamp
+            WHERE p.region = ? AND p.timestamp >= ? 
+            ORDER BY p.timestamp ASC
+        ''', (region, time_limit))
+        
+    rows = c.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]

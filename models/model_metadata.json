@@ -7,7 +7,7 @@
   },
   "f1_cyclone_class": 0.5788651743883394,
   "roc_auc": 0.9603816172394679,
-  "training_date": "2026-04-23",
+  "training_date": "2026-05-02",
   "training_data_rows": 47280,
   "positive_examples": 3280,
   "features_used": [

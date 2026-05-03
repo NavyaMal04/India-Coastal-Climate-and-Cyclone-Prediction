@@ -59,3 +59,24 @@ Thumbs.db
 # --- Scratch files ---
 scratch_*.py
 inspection_report.txt
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+.venv/
+env/
+
+# Data / artifacts (optional)
+data/processed/*.csv
+data/processed/*.json
+
+# Images (if you don’t need them in repo)
+models/evaluation/*.png
+
+# OS
+.DS_Store
+Thumbs.db
+
+debug_*.py
+check_*.py
