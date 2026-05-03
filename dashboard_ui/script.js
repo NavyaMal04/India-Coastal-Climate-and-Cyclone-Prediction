@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const grid = document.getElementById('alertContainer');
         let filtered = latestAlerts;
         if (currentRegion !== "All") filtered = filtered.filter(a => a.region === currentRegion);
-        if (currentSeverityFilter !== "all") filtered = filtered.filter(a => a.severity === (currentSeverityFilter === 'high' ? 'High' : 'Moderate'));
+        if (currentSeverityFilter !== "all") filtered = filtered.filter(a => a.severity === (currentSeverityFilter === 'high' ? 'CRITICAL' : 'WARNING'));
 
         if (filtered.length === 0) {
             grid.innerHTML = `<div class="broadcast-empty">No ${currentSeverityFilter} alerts active for this sector.</div>`;
@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>${a.message}</p>
                 <div class="card-footer">
                     <span>📍 ${a.region}</span>
-                    <span>🕒 ${new Date(a.timestamp).toLocaleTimeString()}</span>
+                    <span>🕒 ${new Date(a.timestamp + 'Z').toLocaleString(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</span>
                 </div>
             </div>
         `).join('');

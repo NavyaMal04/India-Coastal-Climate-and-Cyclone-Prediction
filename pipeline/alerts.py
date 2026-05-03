@@ -61,19 +61,19 @@ def evaluate_alerts(predictions):
         # Type 1: Heavy Rainfall Warning (WARNING)
         if p['rainfall_mm'] > 0.5:
             if not is_alert_active_recently(region, "Heavy Rainfall Warning"):
-                msg = f"Heavy rainfall conditions detected over {region}. Current: {p['rainfall_mm']}mm. Coastal flooding risk elevated."
+                msg = f"Heavy rainfall conditions detected over {region}. Current: {p['rainfall_mm']:.1f}mm. Coastal flooding risk elevated."
                 triggered_alerts.append(generate_alert_dict(region, timestamp, "Heavy Rainfall Warning", "WARNING", msg))
                 
         # Type 2: Low Pressure Alert (WARNING)
         if p['pressure_hpa'] < 1010:
             if not is_alert_active_recently(region, "Low Pressure Alert"):
-                msg = f"Anomalous low pressure detected over {region}. Current: {p['pressure_hpa']}hPa. Monitor for deepening system."
+                msg = f"Anomalous low pressure detected over {region}. Current: {p['pressure_hpa']:.1f}hPa. Monitor for deepening system."
                 triggered_alerts.append(generate_alert_dict(region, timestamp, "Low Pressure Alert", "WARNING", msg))
                 
         # Type 5: Extreme Wind Alert (WARNING)
         if p['wind_speed_knots'] > 5.0:
             if not is_alert_active_recently(region, "Extreme Wind Alert"):
-                msg = f"Elevated wind speeds detected over {region}. Current: {p['wind_speed_knots']}kts. Coastal marine advisory issued."
+                msg = f"Elevated wind speeds detected over {region}. Current: {p['wind_speed_knots']:.1f}kts. Coastal marine advisory issued."
                 triggered_alerts.append(generate_alert_dict(region, timestamp, "Extreme Wind Alert", "WARNING", msg))
                 
         p['alerts'] = [a for a in triggered_alerts if a['region'] == region]

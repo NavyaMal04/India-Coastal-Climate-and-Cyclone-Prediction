@@ -59,9 +59,9 @@ async def read_history(region: str, days: int = 30):
 @app.post("/sync")
 async def sync_data():
     try:
-        scheduler_path = os.path.join(BASE_DIR, "pipeline", "scheduler.py")
         result = subprocess.run(
-            ["python", scheduler_path, "--once"],
+            ["python", "-m", "pipeline.scheduler", "--once"],
+            cwd=BASE_DIR,
             capture_output=True,
             text=True,
             check=True

@@ -110,7 +110,7 @@ def fetch_live_data_for_point(lat, lon, region_name="Unknown"):
     try:
         forecast_url = (
             f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
-            f"&hourly=windspeed_10m,surface_pressure,precipitation,temperature_2m"
+            f"&hourly=windspeed_10m,windgusts_10m,surface_pressure,precipitation,temperature_2m"
             f"&past_days=1&windspeed_unit=kn"
         )
         resp = requests.get(forecast_url, timeout=10)
@@ -121,8 +121,11 @@ def fetch_live_data_for_point(lat, lon, region_name="Unknown"):
                 times = pd.to_datetime(hourly['time'])
                 now_idx = (times <= current_time).sum() - 1
                 if now_idx >= 0:
+                    wind_sustained = hourly.get('windspeed_10m', [])[now_idx] or 0.0
+                    wind_gust = hourly.get('windgusts_10m', [])[now_idx] or 0.0
+                    
                     final_data["rainfall"] = sum([x for x in hourly.get('precipitation', [])[max(0, now_idx-23):now_idx+1] if x is not None])
-                    final_data["wind_speed"] = hourly.get('windspeed_10m', [])[now_idx] or 0.0
+                    final_data["wind_speed"] = max(wind_sustained, wind_gust)
                     final_data["pressure"] = hourly.get('surface_pressure', [])[now_idx] or 1010.0
                     final_data["sst"] = hourly.get('temperature_2m', [])[now_idx] or 28.0
                     final_data["source"] = "Open-Meteo"

@@ -72,10 +72,6 @@ def run_inference(live_data):
         if wind_speed > 5.0: risk_score += 2
         if rainfall > 0.5: risk_score += 1
         
-        if risk_score <= 2: risk_level = 'Low'
-        elif risk_score <= 5: risk_level = 'Moderate'
-        else: risk_level = 'High'
-        
         # 4. Prepare feature vector for ML
         feature_dict = {
             "sst": sst,
@@ -99,6 +95,14 @@ def run_inference(live_data):
         
         # 5. Blend probabilities
         final_probability = (0.6 * ml_probability) + (0.4 * (risk_score / 10.0))
+        
+        # 6. Determine Risk Level based on final blended probability
+        if final_probability >= 0.50: 
+            risk_level = 'High'
+        elif final_probability >= 0.25: 
+            risk_level = 'Moderate'
+        else: 
+            risk_level = 'Low'
         
         predictions[region] = {
             "region": region,
